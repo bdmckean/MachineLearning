@@ -54,10 +54,11 @@ class LogReg:
         :param num_features: The number of features (including bias)
         :param eta: A function that takes the iteration as an argument (the default is a constant value)
         """
-
         self.w = np.zeros(num_features)
         self.eta = eta
         self.last_update = defaultdict(int)
+
+
 
     def progress(self, examples_x, examples_y):
         """
@@ -91,7 +92,16 @@ class LogReg:
 
         # TODO: Finish this function to do a single stochastic gradient descent update
         # and return the updated weight vector
-
+        
+        #print ("y", y)
+        pred = sigmoid(x_i.dot(self.w))
+        error = pred - y
+        #print ("Pred", pred)
+        #print ("error", error)
+        gradient = x_i.T.dot(error)
+        #gradient = x_i * error
+        #print ("gradient", gradient)
+        self.w += -self.eta*gradient
         return self.w
 
 def sigmoid(score, threshold=20.0):
@@ -105,8 +115,8 @@ def sigmoid(score, threshold=20.0):
 
     # TODO: Finish this function to return the output of applying the sigmoid
     # function to the input score (Please do not use external libraries)
-    sigm = 1 / ( 1 + math.exp(-score)  
-    return reurtn sigm
+    sigm = 1 / ( 1 + exp(-score)  )
+    return  sigm
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
@@ -119,16 +129,46 @@ if __name__ == "__main__":
 
     data = Numbers('../data/mnist.pkl.gz')
 
-    # Initialize model
-    lr = LogReg(data.train_x.shape[1], args.eta)
+    ETA_VALUES = [ 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5]
 
-    # Iterations
-    iteration = 0
-    for epoch in range(args.passes):
-        data.train_x, data.train_y = Numbers.shuffle(data.train_x, data.train_y)
+    outdata = []
 
-        # TODO: Finish the code to loop over the training data and perform a stochastic
-        # gradient descent update on each training example.
+    # Change comments on next two lines to run graph test
+    ETA_VALUES = [args.eta ] 
+    #args.passes = 100
+    for eta in ETA_VALUES:
+        # Initialize model
+        #lr = LogReg(data.train_x.shape[1], args.eta)
+        lr = LogReg(data.train_x.shape[1], eta)
 
-        # NOTE: It may be helpful to call upon the 'progress' method in the LogReg
-        # class to make sure the algorithm is truly learning properly on both training and test data
+        # Iterations
+        iteration = 0
+        for epoch in range(args.passes):
+            print ("ETA", eta)
+            outdata.append([eta])
+            print ("epoch", epoch)
+            outdata[-1].append(epoch)
+            data.train_x, data.train_y = Numbers.shuffle(data.train_x, data.train_y)
+
+            # TODO: Finish the code to loop over the training data and perform a stochastic
+            # gradient descent update on each training example.
+            for sample_x, sample_y in zip(data.train_x, data.train_y):
+                lr.sgd_update(sample_x, sample_y)
+            
+
+            # NOTE: It may be helpful to call upon the 'progress' method in the LogReg
+            # class to make sure the algorithm is truly learning properly on both training and test data
+            log_err, acc = lr.progress(data.train_x, data.train_y)
+            print ("Train: ", log_err, acc)
+            outdata[-1].append(acc)
+            log_err, acc = lr.progress(data.test_x, data.test_y)
+            print ("Test: ", log_err, acc)
+            outdata[-1].append(acc)
+
+    exit(0)
+    # Code for graph
+    with open ('hw2_1_out.csv' , 'w') as out_file:
+        out_file.write("eta,epoch,train_acc,test_acc\n")
+        for entry in outdata:
+            line = ",".join([str(x) for x in entry]) + "\n"
+            out_file.write(line)
