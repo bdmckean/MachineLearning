@@ -1,3 +1,8 @@
+
+# coding: utf-8
+
+# In[1]:
+
 import numpy as np
 import datetime
 
@@ -44,8 +49,23 @@ class RNN:
         model = Sequential()
         model.add(Embedding(dict_size, embedding_length, input_length=example_length))
         model.add(Dropout(0.2))
-        model.add(LSTM(units=lstm_units, dropout=0.2, recurrent_dropout=0.2))
+        model.add(LSTM(units=lstm_units))
+        model.add(Dropout(0.2))
         model.add(Dense(1, activation='sigmoid'))
+
+
+        #model = Sequential()
+        #model.add(Embedding(dict_size, embedding_length, input_length=example_length), dropout=0.2)
+        #model.add(Dropout(0.2))
+        #model.add(Conv1D(filters=64, kernel_size=3, padding='same', activation='relu'))
+        #model.add(MaxPooling1D(pool_size=2))
+        #model.add(Dropout(0.5))
+        #model.add(Conv1D(filters=64, kernel_size=3, padding='same', activation='relu'))
+        #model.add(MaxPooling1D(pool_size=2))
+        #model.add(Dropout(0.5))
+        #model.add(LSTM(160), dropout_W=0.2, dropout_U=0.2)
+        #model.add(Dense(32, activation='relu'))
+        #model.add(Dense(1, activation='sigmoid'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         print ("dict_size={0}, example_length={1}, embedding_length={2},  batch_size={3}, epochs={4}".format(\
             dict_size, example_length, embedding_length,  batch_size, epochs))
@@ -74,22 +94,36 @@ class RNN:
 
 # In[ ]:
 
-num_words=10000
+num_words=5000
+num_words_test = [1000,2500,5000,7500,10000]
 
 (train_x, train_y), (test_x, test_y) = imdb.load_data(num_words=num_words)
+#rnn = RNN(train_x, train_y, test_x, test_y, dict_size=5000, example_length=100, embedding_length=16,  batch_size=256, epochs=15) 
+#rnn = RNN(train_x, train_y, test_x, test_y, dict_size=5000, example_length=100, embedding_length=16,  batch_size=256, epochs=15) 
+
+# Variation test
+embl_test = [16,32,64,128,256]
+batch_test = [16,32,64,128,256]
+lstm_test = [64,96,128,192,256]
+exlen_test = [128,256,512,768,1024]
+
 # Baseline units
-embl=128
+embl=64
 exlen = 512
 batch = 32
-lstm = 64
+lstm = 128
 
 # Change this code to run each test
-time = datetime.datetime.now()
-rnn = RNN(train_x, train_y, test_x, test_y, dict_size=num_words,\
-example_length=exlen, embedding_length=embl,  batch_size=batch, epochs=15, lstm_units=lstm) 
+#for embl in embl_test:
+for lstm in lstm_test:
+    print ("lstm", lstm, lestm_test)
+    time = datetime.datetime.now()
+    rnn = RNN(train_x, train_y, test_x, test_y, dict_size=num_words,\
+        example_length=exlen, embedding_length=embl,  batch_size=batch, epochs=3, lstm_units=lstm) 
 
-rnn.train()
-rnn.evaluate()
+    rnn.train()
+    rnn.evaluate()
+    print (datetime.datetime.now() - time)
 
 
 

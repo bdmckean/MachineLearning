@@ -75,16 +75,23 @@ class CNN:
         
     
         # TODO: build you CNN model
-
         model = Sequential()
-        model.add(Conv2D(32, kernel_size=(3, 3), input_shape=(28, 28, 1), activation='relu'))
-        model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))
+        model.add(Conv2D(32, kernel_size=(5, 5), strides=(1, 1),
+                         activation='relu',
+                         input_shape=input_shape))
+        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
+        model.add(Dropout(0.5))
+        model.add(Conv2D(64, (5, 5), activation='relu'))
         model.add(MaxPool2D(pool_size=(2, 2)))
-        model.add(Dropout(0.25))
+        model.add(Dropout(0.5))
+        model.add(Conv2D(64, (5, 5), activation='relu'))
+        model.add(MaxPool2D(pool_size=(2, 2)))
+        model.add(Dropout(0.5))
+
         model.add(Flatten())
-        model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.50))
-        model.add(Dense(10, activation='softmax'))
+        model.add(Dense(1000, activation='relu'))
+        model.add(Dropout(0.5))
+        model.add(Dense(num_classes, activation='softmax'))
         model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.SGD(lr=0.01),
               metrics=['accuracy'])
@@ -129,7 +136,7 @@ if __name__ == '__main__':
     #print ( data.train_x.shape, data.test_x.shape, data.train_y.shape, data.test_y.shape )
    
     args.limit = 50000
-    cnn = CNN(data.train_x[:args.limit], data.train_y[:args.limit], data.test_x, data.test_y, batch_size=32)
+    cnn = CNN(data.train_x[:args.limit], data.train_y[:args.limit], data.test_x, data.test_y)
     cnn.train()
     acc = cnn.evaluate()
     print(acc)

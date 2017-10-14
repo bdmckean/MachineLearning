@@ -1,3 +1,8 @@
+
+# coding: utf-8
+
+# In[1]:
+
 import numpy as np
 import datetime
 
@@ -43,8 +48,8 @@ class RNN:
         # create the model
         model = Sequential()
         model.add(Embedding(dict_size, embedding_length, input_length=example_length))
+        model.add(LSTM(units=lstm_units))
         model.add(Dropout(0.2))
-        model.add(LSTM(units=lstm_units, dropout=0.2, recurrent_dropout=0.2))
         model.add(Dense(1, activation='sigmoid'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         print ("dict_size={0}, example_length={1}, embedding_length={2},  batch_size={3}, epochs={4}".format(\
@@ -75,21 +80,34 @@ class RNN:
 # In[ ]:
 
 num_words=10000
+num_words_test = [1000,2500,5000,7500,10000]
 
 (train_x, train_y), (test_x, test_y) = imdb.load_data(num_words=num_words)
+#rnn = RNN(train_x, train_y, test_x, test_y, dict_size=5000, example_length=100, embedding_length=16,  batch_size=256, epochs=15) 
+#rnn = RNN(train_x, train_y, test_x, test_y, dict_size=5000, example_length=100, embedding_length=16,  batch_size=256, epochs=15) 
+
+# Variation test
+embl_test = [16,32,64,128,256]
+batch_test = [16,32,64,128,256]
+lstm_test = [64,96,128,192,256]
+exlen_test = [128,256,512,768,1024]
+
 # Baseline units
 embl=128
 exlen = 512
 batch = 32
-lstm = 64
+lstm = 128
 
 # Change this code to run each test
-time = datetime.datetime.now()
+#for batch in batch_test:
+#    print ("batch", batch, batch_test)
+#time = datetime.datetime.now()
 rnn = RNN(train_x, train_y, test_x, test_y, dict_size=num_words,\
-example_length=exlen, embedding_length=embl,  batch_size=batch, epochs=15, lstm_units=lstm) 
+    example_length=exlen, embedding_length=embl,  batch_size=batch, epochs=10, lstm_units=lstm) 
 
 rnn.train()
 rnn.evaluate()
+#print (datetime.datetime.now() - time)
 
 
 

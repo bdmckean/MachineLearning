@@ -101,7 +101,8 @@ class Network:
             #print (db_list[ell].shape, db_list[ell])
             # TODO dW_list[ell] =
             #print (dW_list[ell].shape, dW_list[ell])
-            dW_list[ell] = delta *  a_list[ell].T 
+            #dW_list[ell] = delta *  a_list[ell].T 
+            dW_list[ell] = delta.dot( a_list[ell].T )
             #print ("dW shape", dW_list[ell].shape, "dW", dW_list[ell], "W", self.weights)
             # TODO delta = self.weights[ell].T*delta * h
             #delta = self.weights[ell].T*delta* (a_list[ell] - y)
@@ -160,4 +161,4 @@ if __name__ == "__main__":
 
     #nn = Network([2,30,2])
     nn = Network([196,30,10])
-    nn.SGD_train(train, epochs=1000, eta=0.01, lam=0.001, verbose=True, test=test)
+    nn.SGD_train(train, epochs=200, eta=0.01, lam=0.001, verbose=True, test=test)
