@@ -27,6 +27,9 @@ def weight_vector(x, y, alpha):
 
     w = np.zeros(len(x[0]))
     # TODO: IMPLEMENT THIS FUNCTION
+    for i in range(len(x)):
+        w += alpha[i] * y[i] *  x[i]
+    print w
     return w
 
 
@@ -39,6 +42,9 @@ def find_support(x, y, w, b, tolerance=0.001):
 
     support = set()
     # TODO: IMPLEMENT THIS FUNCTION
+    for i in range(len(x)): 
+        if abs(w.T.dot(x[i] ) + b - y[i])  <= tolerance:
+            support.add(i)
     return support
 
 
@@ -48,7 +54,9 @@ def find_slack(x, y, w, b):
     Given a set of training examples and primal weights, return the indices
     of all examples with nonzero slack as a set.
     """
-
     slack = set()
     # TODO: IMPLEMENT THIS FUNCTION
+    for i in range(len(x)):
+        if y[i] * (w.T.dot(x[i]) + b) < 1:
+            slack.add(i)
     return slack
