@@ -29,7 +29,6 @@ def weight_vector(x, y, alpha):
     # TODO: IMPLEMENT THIS FUNCTION
     for i in range(len(x)):
         w += alpha[i] * y[i] *  x[i]
-    print w
     return w
 
 
